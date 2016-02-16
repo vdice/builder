@@ -1,4 +1,10 @@
+# makeup-managed:begin
+include makeup.mk
+# makeup-managed:end
+
 SHORT_NAME ?= builder
+
+include ${MAKEUP_DIR}/makeup-bag-deis/versioning.mk
 
 # Enable vendor/ directory support.
 export GO15VENDOREXPERIMENT=1
@@ -10,22 +16,15 @@ DEV_ENV_WORK_DIR := /go/src/${REPO_PATH}
 DEV_ENV_PREFIX := docker run --rm -e GO15VENDOREXPERIMENT=1 -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR}
 DEV_ENV_CMD := ${DEV_ENV_PREFIX} ${DEV_ENV_IMAGE}
 
-# SemVer with build information is defined in the SemVer 2 spec, but Docker
-# doesn't allow +, so we use -.
-VERSION ?= git-$(shell git rev-parse --short HEAD)
 BINARY_DEST_DIR := rootfs/usr/bin
 # Common flags passed into Go's linker.
 LDFLAGS := "-s -X main.version=${VERSION}"
-IMAGE_PREFIX ?= deis
 # Docker Root FS
 BINDIR := ./rootfs
-
-DEIS_REGISTRY ?= ${DEV_REGISTRY}/
 
 # Kubernetes-specific information for RC, Service, and Image.
 RC := manifests/deis-${SHORT_NAME}-rc.yaml
 SVC := manifests/deis-${SHORT_NAME}-service.yaml
-IMAGE := ${DEIS_REGISTRY}${IMAGE_PREFIX}/${SHORT_NAME}:${VERSION}
 
 all:
 	@echo "Use a Makefile to control top-level building of the project."

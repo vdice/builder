@@ -5,8 +5,6 @@ branches:
 cache:
   directories:
     - vendor
-env:
-  DEV_REGISTRY=quay.io
 services:
   - docker
 sudo: required
